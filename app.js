@@ -33,10 +33,10 @@ const dataStaff = [
 
 const userAccounts = {
     "admin": "admin13",
-    "psdm": "20psdm26",
-    "medkraf": "medkrafmania",
-    "jaker": "jakersolid",
-    "redaksi": "redaks1"
+    "psdm": "triwulandua",
+    "medkraf": "kreatifmedkraf",
+    "jaker": "jaringangawe",
+    "redaksi": "redaksiuu"
 };
 
 let currentUser = "";
