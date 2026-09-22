@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KPI NISKALA 2026</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { darkMode: 'class' }
+    </script>
+    <link rel="stylesheet" href="style.css">
+
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCPEpsIU7-o7w3wNjudn9MjoJmSaoM9Vgs",
+            authDomain: "kpiniskalabhrata.firebaseapp.com",
+            databaseURL: "https://kpiniskalabhrata-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "kpiniskalabhrata",
+            storageBucket: "kpiniskalabhrata.firebasestorage.app",
+            messagingSenderId: "288444847794",
+            appId: "1:288444847794:web:409fa2dd0c38f67c88dbab",
+            measurementId: "G-21R8LX7M85"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database(); 
+    </script>
+</head>
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-300 min-h-screen p-4 md:p-8">
+
+    <div class="fixed bottom-6 right-6 z-50">
+        <button onclick="toggleDarkMode()" class="p-4 bg-white dark:bg-slate-800 shadow-2xl rounded-full text-2xl border dark:border-slate-700 hover:scale-110 transition-transform">🌓</button>
+    </div>
+
+    <div id="login-page" class="flex items-center justify-center min-h-[80vh]">
+        <div class="bg-white dark:bg-slate-900 p-8 md:p-12 rounded-[2.5rem] shadow-2xl w-full max-w-md border dark:border-slate-800 text-center">
+            <h1 class="text-4xl font-black text-indigo-600 dark:text-indigo-400 tracking-tighter italic uppercase">KPI Login</h1>
+            <p class="text-[10px] font-black text-slate-400 tracking-[0.3em] mb-8 uppercase">Niskala Experience 2026</p>
+            <input type="text" id="username" placeholder="Username" class="w-full px-6 py-4 rounded-2xl border-2 dark:bg-slate-800 dark:border-slate-700 dark:text-white mb-4 outline-none focus:border-indigo-500 font-bold">
+            <input type="password" id="password" placeholder="Password" class="w-full px-6 py-4 rounded-2xl border-2 dark:bg-slate-800 dark:border-slate-700 dark:text-white mb-6 outline-none focus:border-indigo-500 font-bold">
+            <button onclick="handleLogin()" class="w-full bg-indigo-600 text-white font-black py-4 rounded-2xl hover:bg-indigo-700 transition-all uppercase tracking-widest shadow-lg shadow-indigo-200 dark:shadow-none">Masuk</button>
+        </div>
+    </div>
+
+    <div id="dashboard-page" class="hidden max-w-7xl mx-auto space-y-6">
+        <div class="flex flex-col md:flex-row justify-between items-center bg-white dark:bg-slate-900 p-6 rounded-[2.5rem] shadow-sm border dark:border-slate-800 gap-4">
+            <div class="text-center md:text-left">
+                <h2 id="display-divisi" class="text-2xl font-black uppercase italic tracking-tight">Dashboard</h2>
+                <div class="flex flex-wrap justify-center md:justify-start gap-3 mt-2 text-[11px] font-bold">
+                    <div class="bg-slate-100 dark:bg-slate-800 px-3 py-1.5 rounded-xl border dark:border-slate-700">
+                        <span class="text-slate-400">PERIODE:</span> 
+                        <select id="periode-tw" onchange="renderTable()" class="bg-transparent text-indigo-600 dark:text-indigo-400 outline-none cursor-pointer font-black dark:bg-slate-800">
+                            <option value="tw1">Triwulan 1</option>
+                            <option value="tw2">Triwulan 2</option>
+                            <option value="tw3">Triwulan 3</option>
+                            <option value="all">All Triwulan (Rekap)</option>
+                        </select>
+                    </div>
+                    <div id="admin-filter-area" class="hidden bg-slate-100 dark:bg-slate-800 px-3 py-1.5 rounded-xl border dark:border-slate-700">
+                        <span class="text-slate-400">SORTIR DIVISI:</span> 
+                        <select id="filter-divisi" onchange="renderTable()" class="bg-transparent text-slate-900 dark:text-white outline-none cursor-pointer font-black dark:bg-slate-800">
+                            <option value="all">Semua</option>
+                            <option value="psdm">PSDM</option>
+                            <option value="redaksi">Redaksi</option>
+                            <option value="jaker">Jaker</option>
+                            <option value="medkraf">Medkraf</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <button onclick="location.reload()" class="bg-rose-50 dark:bg-rose-900/20 text-rose-600 dark:text-rose-400 px-8 py-3 rounded-xl font-black text-xs uppercase tracking-widest">Logout</button>
+        </div>
+
+        <div id="admin-area" class="hidden space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="bg-white dark:bg-slate-900 rounded-[2rem] shadow-sm border dark:border-slate-800 overflow-hidden">
+                    <div class="p-5 border-b dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50 font-black text-[10px] tracking-widest uppercase">Ringkasan Organisasi</div>
+                    <table class="w-full text-sm font-bold">
+                        <tr class="border-b dark:border-slate-800">
+                            <td class="p-5 text-slate-500 font-bold">MPI Organisasi (>70%)</td>
+                            <td id="res-mpi-org" class="p-5 text-right font-black">0%</td>
+                            <td id="status-mpi-org" class="p-5 text-center text-[10px] w-28"></td>
+                        </tr>
+                        <tr class="border-b dark:border-slate-800">
+                            <td class="p-5 text-slate-500 font-bold">Retensi Staff (>70%)</td>
+                            <td id="res-retensi" class="p-5 text-right font-black">0%</td>
+                            <td id="status-retensi" class="p-5 text-center text-[10px] w-28 font-black uppercase"></td>
+                        </tr>
+                        <tr>
+                            <td class="p-5 text-rose-600 font-bold uppercase">Staff Kritis (Warning)</td>
+                            <td id="res-kritis" class="p-5 text-right text-rose-600 text-2xl font-black">0</td>
+                            <td class="p-5 w-28"></td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="bg-white dark:bg-slate-900 rounded-[2rem] shadow-sm border dark:border-slate-800 overflow-hidden">
+                    <div class="p-5 border-b dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50 font-black text-[10px] tracking-widest uppercase flex justify-between items-center">
+                        <span>Ranking Performa Divisi</span>
+                        <button id="btn-lock-ranking" onclick="unlockRanking()" class="text-[9px] bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 px-3 py-1 rounded-full hover:scale-105 transition-transform font-black">🔓 BUKA AKSES</button>
+                    </div>
+                    <div id="ranking-container" class="relative">
+                        <div id="divisi-ranking-body" class="divide-y dark:divide-slate-800 blur-[6px] pointer-events-none select-none transition-all duration-500">
+                            </div>
+                        <div id="ranking-overlay" class="absolute inset-0 flex items-center justify-center bg-white/40 dark:bg-slate-900/40 backdrop-blur-[2px]">
+                            <p class="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] bg-white dark:bg-slate-800 px-4 py-2 rounded-full shadow-xl border dark:border-slate-700">Protected</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white dark:bg-slate-900 rounded-[2rem] shadow-sm border dark:border-slate-800 overflow-hidden">
+                <div class="p-4 bg-indigo-50 dark:bg-indigo-900/20 border-b dark:border-slate-800 text-center font-black text-xs text-indigo-900 dark:text-indigo-400 uppercase italic">🏆 Dashboard Niskala Excellence Awards</div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 divide-y md:divide-y-0 md:divide-x dark:divide-slate-800">
+                    <div class="p-8 text-center"><p class="text-[10px] text-slate-400 font-black uppercase mb-1">Supreme Achiever</p><div id="award-supreme" class="font-black text-xl text-indigo-600 dark:text-indigo-400 italic">-</div></div>
+                    <div class="p-8 text-center"><p class="text-[10px] text-slate-400 font-black uppercase mb-1">Best of Divisi</p><div id="award-best-div" class="text-[11px] font-bold leading-relaxed"></div></div>
+                    <div class="p-8 text-center"><p class="text-[10px] text-slate-400 font-black uppercase mb-1">The Rising Star</p><div id="award-rising" class="font-black text-xl text-amber-500 italic">-</div></div>
+                    <div class="p-8 text-center"><p class="text-[10px] text-slate-400 font-black uppercase mb-1">Synergy & Harmony</p><div id="award-synergy" class="font-black text-xl text-emerald-500 italic">-</div></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white dark:bg-slate-900 rounded-[2.5rem] shadow-xl border dark:border-slate-800 overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left font-bold text-sm min-w-[850px]">
+                    <thead class="bg-slate-900 dark:bg-black text-white text-[10px] uppercase tracking-[0.2em] font-black text-center">
+                        <tr>
+                            <th class="p-6 text-left">Nama Staff</th>
+                            <th class="p-6 text-left">Divisi</th>
+                            <th class="p-6">Kuantitas (/60)</th>
+                            <th class="p-6">Kualitas (/15)</th>
+                            <th class="p-6">Sinergi (/15)</th>
+                            <th class="p-6 bg-indigo-800 cursor-pointer hover:bg-indigo-700 transition-colors" onclick="toggleSortMpi()">
+                                MPI % <span id="sort-icon">↕️</span>
+                            </th>
+                            <th class="p-6">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body" class="divide-y divide-slate-100 dark:divide-slate-800"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="action-area" class="flex justify-end pb-12">
+            <button onclick="simpanPermanen()" class="w-full md:w-auto bg-indigo-600 text-white font-black px-12 py-5 rounded-2xl shadow-2xl shadow-indigo-200 dark:shadow-none uppercase tracking-widest text-sm hover:bg-indigo-700 transition-all">Simpan & Setor Data</button>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

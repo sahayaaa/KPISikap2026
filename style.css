@@ -1,0 +1,18 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+body { font-family: 'Plus Jakarta Sans', sans-serif; }
+
+.status-excellent { color: #10b981; }
+.status-bagus { color: #3b82f6; }
+.status-normal { color: #f59e0b; }
+.status-kritis { color: #ef4444; }
+
+/* PERBAIKAN: Memastikan font-size status seragam di 10px */
+.tercapai { color: #10b981; font-weight: 800; font-size: 10px; }
+.tidak-tercapai { color: #ef4444; font-weight: 800; font-size: 10px; }
+
+input[type=number] { border: 2.5px solid #f1f5f9; border-radius: 12px; width: 65px; text-align: center; padding: 6px; font-weight: 800; outline: none; background: transparent; transition: 0.3s; }
+.dark input[type=number] { border-color: #334155; color: white; }
+input[type=number]:focus:not(:disabled) { border-color: #6366f1; background: white; color: black; }
+input:disabled { opacity: 0.4; border-color: transparent !important; cursor: not-allowed; }
+
+input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
